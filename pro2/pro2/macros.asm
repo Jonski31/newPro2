@@ -1,3 +1,4 @@
+// LCD MACROS /////////
 .macro do_lcd_command
 	ldi r16, @0
 	rcall lcd_command
@@ -35,8 +36,9 @@
 	do_lcd_command 0b00000110 ; increment, no display shift
 	do_lcd_command 0b00001100 ; Cursor on, bar, no blink
 .endmacro
+///////////////////////////////////////////////////////////
 
-
+// STACK MACROS //////////////////////
 .macro pushStack
 	push temp
 	push temp1
@@ -61,7 +63,9 @@
 	pop temp1
 	pop temp
 .endmacro
+///////////////////////////////////////////////////////////////////////////////////
 
+///////////		INVENTORY MACROS //////////////////////////////////
 .macro setInventory  
 	;arranges items in 2 byte blocks, 1st byte = stock, 2nd byte = cost
 	ldi YL, low(inventory)
@@ -155,3 +159,21 @@ return:
 	lds temp2, currentStock
 	cpi temp2, 0
 .endMacro
+////////////////////////////////////////
+
+/////	COIN SCREEN MACROS //////////
+.macro incrementCoins
+	lds temp, coins
+	inc temp
+	sts coins, temp
+	clr temp
+.endMacro
+
+.macro decrementCoins
+	lds temp, coins
+	dec temp
+	sts coins, temp
+	clr temp
+.endMacro
+
+////////////////////////////////////

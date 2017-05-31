@@ -26,8 +26,11 @@ rowloop:
 	lsl rmask
 	jmp rowloop
 
-returnBridge:
+returnBridge: // NO KEYS ARE SCANNED PREVIOUS NUMBER = 0!
+	ldi temp, 0
+	sts prevNum, temp
 	jmp returnKeypad
+
 nextcol: ; if row scan is over
 	lsl cmask
 	inc col ; increase column value
@@ -63,20 +66,35 @@ symbols:
 	cpi col, 1 ; or if we have zero
 	breq zero
 	ldi r23, '#' ; if not we have hash
+
+	;checkIfMenu 2
+	;breq returnKeypad
+	checkIfMenu 4			;if on insert coins screen move to select screen
+	breq branchSelectScreen
+	;out portc, r23
+	checkIfMenu 6			;if in admin mode move to select screen :)
+	breq branchSelectScreen
 	jmp returnKeypad
 star:
-	ldi r23, '*' ; Set to star
-	jmp returnKeypad
+	ldi r23, '*'		; Set to star
+	checkIfMenu 2		; ADMIN MODE requires setScreen menu (2)
+	brne returnKeypad
+
+	lds temp, prevNum	;at this point prevNum is previous value of the keypad
+	cpi temp, '*'		;now check previous value of numpressed was '*' so we dont reset the timer
+	breq storeKeypad	;store next '*' into numPressed
+
+	ldi temp, 20		;store 20 into timer5 to measure 5 secs for admin mode
+	sts timer6, temp	
+	jmp storeKeypad		
 zero:
 	ldi r23, 0 ; Set to zero
 	jmp returnKeypad
 
 branchSelectScreen:
-	rcall selectScreen
+	rcall selectScreen	
 	rjmp returnKeypad
-
 branchOOSScreen:
-	
 	rcall outOfStockScreen
 	;clr r23
 	rjmp returnKeypad
@@ -84,12 +102,19 @@ branchOOSScreen:
 // Store keypad when we need output value otherwise return
 storeKeypad:
 	sts numPressed, r23   //here we store r23 into numpressed just cause...
-	
-	checkIfMenu 2		 // check again if menu = 2 
+	cpi r23, '*'			; if * is pressed return and store it in previous
+	breq storePrev
+
+	checkIfMenu 2			//check again if menu = 2 
 	brne returnKeypad		//if it doesn't jump to end, if it does do macro
-	
 	isStockEmpty r23		//if true, branch to the out of stock screen
 	breq branchOOSScreen
+	
+	rcall coinScreen
+	jmp returnKeypad
+
+storePrev:
+	sts prevNum, r23
 
 returnKeypad:	
 	ret

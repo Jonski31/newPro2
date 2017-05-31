@@ -5,7 +5,7 @@
 ; Author : asafp
 ;
 
-.include "m2560def.inc" 
+.include "m2560def.inc"
 
 
 .def temp = r16
@@ -24,14 +24,14 @@
 .equ INITROWMASK = 0x01 ; scan from the top row
 .equ ROWMASK = 0x0F ; for obtaining input from Port D
 
-.equ secondline = 0b10101000 ; LCD command
+.equ secondline = 0b10101000
 
 .include "macros.asm"
 
 
 .dseg
 	menu: .byte 1 ; menu screen 1-5
-
+	coins: .byte 1 ;keeps track of number of coins entered so far
 // TIMERS //
 TimeCounter:
 	.byte 2 ; Two-byte counter for counting seconds.
@@ -41,27 +41,29 @@ timer1:		; for start screen
 	.byte 1
 timer3:		; for Out of stock screen
 	.byte 1
+timer6:     ; Used for entering admin mode
+	.byte 1
 
 // KEYPAD
 numPressed:		; current number pressed
+	.byte 1
+prevNum:		; previous number pressed
 	.byte 1
 
 currentStock:
 	.byte 1
 currentCost:
 	.byte 1
-
 pattern:
 	.byte 1 //pattern for leds atm flash only
-
 //INTERUPTS
 .cseg
 	.org 0
 		jmp RESET
 	.org INT0addr
-		jmp EXT_INT0  ; push right button interrupt
+		jmp EXT_INT0
 	.org INT1addr
-		jmp EXT_INT1   ;push left button interrupt
+		jmp EXT_INT1   ;push button interrupt
 	.org OVF0addr
 		jmp Timer0OVF ; Jump to the interrupt handler for
 						; Timer0 overflow.
@@ -77,7 +79,7 @@ RESET:
 	ldi r16, high(RAMEND)
 	out SPH, r16
 
-	// LCD & LED RESET
+	// LCD RESET
 	ser r16
 	out DDRF, r16
 	out DDRC, r16
@@ -117,7 +119,11 @@ RESET:
 	// INVENTORY INITIALISATION
 	setInventory
 
-	rcall startScreen  
+	// CONSTANTS
+	ldi temp, 0
+	sts coins, temp
+
+	rcall startScreen
 	rjmp main			;go to main to start polling, reset finished
 
 startScreen: ;start screen is part of reset function
@@ -220,9 +226,83 @@ outOfStockScreen:
 	sts pattern, temp
 	ret
 
+coinScreen:
+	setMenu 4
+
+	resetLCD
+
+	do_lcd_data 'I'
+	do_lcd_data 'n'
+	do_lcd_data 's'
+	do_lcd_data 'e'
+	do_lcd_data 'r'
+	do_lcd_data 't'
+	do_lcd_data ' '
+	do_lcd_data 'c'
+	do_lcd_data 'o'
+	do_lcd_data 'i'
+	do_lcd_data 'n'
+	do_lcd_data 's'
+
+	do_lcd_command secondLine
+	
+	// PRINT TO LED NUMBER OF COINS BEEN ENTERED, LEAVE IN, NOT DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	lds temp, coins
+	out portc, temp
+	// SHOW NUMBER OF COINS REMAINING = CURRENTCOST - COINS ENTERED
+	lds temp1, currentCost
+	sub temp1, temp
+	subi temp1, -'0'
+	do_lcd_data_reg temp1
+	
+	ret
+
+
+	///ADMIN MODE
+enterAdminMode:
+
+	resetLCD
+
+	do_lcd_data 'A'
+	do_lcd_data 'd'
+	do_lcd_data 'm'
+	do_lcd_data 'i'
+	do_lcd_data 'n'
+	do_lcd_data ' '
+	do_lcd_data 'M'
+	do_lcd_data 'o'
+	do_lcd_data 'd'
+	do_lcd_data 'e'
+	do_lcd_data ' '
+	do_lcd_data '?' ;this is currently selected item
+
+	do_lcd_command secondLine
+	do_lcd_data '#'
+
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+
+	ldi temp, 36        ;ASCII value for $$$
+	do_lcd_data_reg temp
+	setMenu 6
+	
+	ret
+
 
 // MAIN LOOP TO START POLLING
 main:
+	;lds temp, menu
+	;out portc, temp
+	;do_lcd_command secondLine
+	;lds temp, numPressed
+	;do_lcd_data_reg temp
+
 	ldi cmask, INITCOLMASK	; initial column mask
 	clr col					; initial column
 	rcall colloop			; continue poll
@@ -241,13 +321,11 @@ Timer0OVF: ; interrupt subroutine to Timer0
 	cpi r24, low(1953) ; Check if (r25:r24) = 7812
 	ldi temp, high(1953) ; 7812 = 10^6/128
 	cpc r25, temp
-
-
 	brne NotSecond //not 0.25 seconds
 	// Execute every 0.25 sec
 	timer1flag:
 		checkIfMenu 1
-		brne timer3flag
+		brne timer6flag
 		lds temp, timer1
 
 		cpi temp, 0
@@ -255,21 +333,38 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		dec temp
 		sts timer1, temp
 		rjmp newQsecond
-		
+	
+	timer6flag:
+		checkIfMenu 2		;admin mode can only be entered in menu 2
+		brne timer3flag		;ELSE move on
+
+		lds temp, prevNum   ;only enter loop if '*' is pressed
+		cpi temp, '*'
+		brne timer3flag
+
+		lds temp, timer6       ;load timer 6 = 20 = 5secs
+
+		cpi temp, 0			   ;when timer runs down to 0, decrement
+		breq callAdminMode 
+		;out portc, temp ; DEBUG DISPLAY TIMER6, (IT WORKS)
+		dec temp
+		sts timer6, temp
+		rjmp newQsecond
+
 	timer3flag:
 		checkIfMenu 3 ;check if in out of stock screen
 		brne epilogue
 		lds temp, timer3
-		//out portc, temp
+		;out portc, temp
 		cpi temp, 0
 		breq callSelectScreen ;change later
-		
+	
 		//FLASH LEDS
 		mov temp2, temp //load time into temp
 		andi temp2, 0b00000001 //and to get either a 1 or 0 in the last bit
 		cpi temp2, 0 //0 = even, 1 = odd
 		brne continue //If odd skip
-		ldi temp1, 0b11111111 
+		ser temp1
 		lds temp2, pattern
 		eor temp2, temp1 //Invert pattern
 		sts pattern, temp2
@@ -282,13 +377,23 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		sts timer3, temp
 		rjmp newQsecond
 
+	NotSecond:
+	; Store the new value of the temporary counter.
+	sts TempCounter, r24
+	sts TempCounter+1, r25
+	rjmp epilogue
+
 	callSelectScreen:
+		ldi temp, 0b00001111
+		;out portc, temp
 		rcall selectScreen
 		rjmp epilogue
 
-	/*callOOSScreen:
-		rcall outOfStockScreen
-		rjmp epilogue*/
+	callAdminMode:
+		ldi temp, 0b01010101
+		;out portc, temp
+		rcall enterAdminMode
+		rjmp epilogue
 
 /*	if(menu == 1 || menu == 3)
 		use timer1 (3 seconds)
@@ -301,10 +406,6 @@ newQsecond: ;starts new quarter
 	clear TempCounter ; Reset the temporary counter.
 	rjmp epilogue
 
-NotSecond:
-	; Store the new value of the temporary counter.
-	sts TempCounter, r24
-	sts TempCounter+1, r25
 
 epilogue:
 	popStack
@@ -314,7 +415,7 @@ epilogue:
 // PUSH BUTTON INTERUPTS :)
 EXT_INT0: ;Right Button
 	pushStack
-	ldi temp, 0b00000000
+	clr temp
 	out PORTC, temp
 	out PORTG, temp
 	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
@@ -332,7 +433,7 @@ END_INT0:
 
 EXT_INT1: ;Left Button
 	pushStack
-	ldi temp, 0b00000000
+	clr temp
 	out PORTC, temp
 	out PORTG, temp
 	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
