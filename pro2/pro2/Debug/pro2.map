@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.6  G:\comp2121\newPro2\pro2\pro2\main.asm Wed May 31 23:51:49 2017
+AVRASM ver. 2.2.6  G:\comp2121\newPro2\pro2\pro2\main.asm Thu Jun 01 00:23:11 2017
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1382,7 +1382,7 @@ DSEG currentCost  00000209
 DSEG pattern      0000020a
 CSEG RESET        00000090
 CSEG EXT_INT0     00000245
-CSEG EXT_INT1     0000025d
+CSEG EXT_INT1     00000260
 CSEG Timer0OVF    000001f9
 CSEG colloop      00000030
 CSEG returnBridge 00000047
@@ -1405,11 +1405,11 @@ CSEG increment@getInventory@4004 00000081
 CSEG return@getInventory@4004 0000008b
 CSEG startScreen  000000e4
 CSEG main         000001f5
-CSEG lcd_command  00000276
-CSEG lcd_wait     00000286
-CSEG sleep_5ms    000002a0
-CSEG sleep_1ms    00000297
-CSEG lcd_data     0000027d
+CSEG lcd_command  0000027c
+CSEG lcd_wait     0000028c
+CSEG sleep_5ms    000002a6
+CSEG sleep_1ms    0000029d
+CSEG lcd_data     00000283
 CSEG NotSecond    00000237
 CSEG timer1flag   0000020b
 CSEG timer3flag   00000217
@@ -1417,14 +1417,14 @@ CSEG callSelectScreen 0000022f
 CSEG newQsecond   00000231
 CSEG epilogue     0000023b
 CSEG continue     0000022b
-CSEG END_INT0     00000253
-CSEG END_INT1     0000026b
-CSEG halt         00000275
+CSEG END_INT0     00000256
+CSEG END_INT1     00000271
+CSEG halt         0000027b
 EQU  LCD_RS       00000007
 EQU  LCD_E        00000006
 EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
-CSEG lcd_wait_loop 0000028b
+CSEG lcd_wait_loop 00000291
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 0000029b
+CSEG delayloop_1ms 000002a1

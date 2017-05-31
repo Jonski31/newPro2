@@ -5,7 +5,7 @@
 ; Author : asafp
 ;
 
-.include "m2560def.inc"
+.include "m2560def.inc" 
 
 
 .def temp = r16
@@ -24,7 +24,7 @@
 .equ INITROWMASK = 0x01 ; scan from the top row
 .equ ROWMASK = 0x0F ; for obtaining input from Port D
 
-.equ secondline = 0b10101000
+.equ secondline = 0b10101000 ; LCD command
 
 .include "macros.asm"
 
@@ -52,16 +52,16 @@ currentCost:
 	.byte 1
 
 pattern:
-	.byte 1
+	.byte 1 //pattern for leds atm flash only
 
 //INTERUPTS
 .cseg
 	.org 0
 		jmp RESET
 	.org INT0addr
-		jmp EXT_INT0
+		jmp EXT_INT0  ; push right button interrupt
 	.org INT1addr
-		jmp EXT_INT1   ;push button interrupt
+		jmp EXT_INT1   ;push left button interrupt
 	.org OVF0addr
 		jmp Timer0OVF ; Jump to the interrupt handler for
 						; Timer0 overflow.
@@ -77,7 +77,7 @@ RESET:
 	ldi r16, high(RAMEND)
 	out SPH, r16
 
-	// LCD RESET
+	// LCD & LED RESET
 	ser r16
 	out DDRF, r16
 	out DDRC, r16
@@ -117,7 +117,7 @@ RESET:
 	// INVENTORY INITIALISATION
 	setInventory
 
-	rcall startScreen
+	rcall startScreen  
 	rjmp main			;go to main to start polling, reset finished
 
 startScreen: ;start screen is part of reset function
@@ -265,8 +265,8 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		breq callSelectScreen ;change later
 		
 		//FLASH LEDS
-		mov temp2, temp //load number into temop
-		andi temp2, 0b00000001 //and to get either a 1 or 0
+		mov temp2, temp //load time into temp
+		andi temp2, 0b00000001 //and to get either a 1 or 0 in the last bit
 		cpi temp2, 0 //0 = even, 1 = odd
 		brne continue //If odd skip
 		ldi temp1, 0b11111111 
@@ -275,6 +275,7 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		sts pattern, temp2
 		out portc, temp2
 		out portg, temp2
+
 		continue:
 		dec temp
 		;out portc, temp
@@ -313,7 +314,9 @@ epilogue:
 // PUSH BUTTON INTERUPTS :)
 EXT_INT0: ;Right Button
 	pushStack
-	
+	ldi temp, 0b00000000
+	out PORTC, temp
+	out PORTG, temp
 	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
 	breq END_INT0 
 
@@ -329,7 +332,9 @@ END_INT0:
 
 EXT_INT1: ;Left Button
 	pushStack
-	
+	ldi temp, 0b00000000
+	out PORTC, temp
+	out PORTG, temp
 	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
 	breq END_INT0 
 
