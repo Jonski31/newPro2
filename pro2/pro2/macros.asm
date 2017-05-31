@@ -82,7 +82,7 @@
 	st Y+, temp
 	ldi temp, 2 
 	st Y+, temp
-	ldi temp, 5 ;5
+	ldi temp, 0 ;5
 	st Y+, temp
 	ldi temp, 1 
 	st Y+, temp
@@ -114,8 +114,10 @@
 
 // Set menu to given input
 .macro setMenu
+	push temp
 	ldi temp, @0
 	sts menu, temp
+	pop temp
 .endMacro
 
 .macro getInventory

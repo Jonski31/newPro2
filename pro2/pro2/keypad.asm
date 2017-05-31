@@ -69,14 +69,16 @@ star:
 	jmp returnKeypad
 zero:
 	ldi r23, 0 ; Set to zero
-	;jmp returnKeypad
+	jmp returnKeypad
 
 branchSelectScreen:
 	rcall selectScreen
 	rjmp returnKeypad
 
 branchOOSScreen:
-	rcall 
+	
+	rcall outOfStockScreen
+	;clr r23
 	rjmp returnKeypad
 
 // Store keypad when we need output value otherwise return

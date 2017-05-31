@@ -93,7 +93,6 @@ RESET:
 	ldi temp, 1<<TOIE0 ; = 128 microseconds
 	sts TIMSK0, temp ; T/C0 interrupt enable
 
-	ldi temp1, 0
 
 	// KEYPAD RESET
 	ldi temp1, PORTLDIR ; PA7:4/PA3:0, out/in
@@ -116,10 +115,8 @@ RESET:
 	rjmp main			;go to main to start polling, reset finished
 
 startScreen: ;start screen is part of reset function
-/*	ldi temp, 1
-	sts menu, temp*/
 	setMenu 1
-	out portc, temp	;debug
+	;out portc, temp
 
 	resetLCD
 
@@ -162,7 +159,7 @@ startScreen: ;start screen is part of reset function
 
 selectScreen:
 	setMenu 2
-	out portc, temp		;debug
+	;out portc, temp
 
 	resetLCD
 
@@ -180,11 +177,15 @@ selectScreen:
 	ret
 
 outOfStockScreen:
-	setMenu 3
+
 	
+	;setMenu 3
+	;ldi temp, 0b10101010
+	;out portc, temp
+
 	resetLCD
 
-	/*do_lcd_data 'O'
+	do_lcd_data 'O'
 	do_lcd_data 'u'
 	do_lcd_data 't'
 	do_lcd_data ' '
@@ -195,11 +196,8 @@ outOfStockScreen:
 	do_lcd_data 't'
 	do_lcd_data 'o'
 	do_lcd_data 'c'
-	do_lcd_data 'k'*/
+	do_lcd_data 'k'
 
-	lds temp, currentStock
-	subi temp, -'0'   ; 'subi -' adds the negative --> this line just converts temp to ascii
-	do_lcd_data_reg temp
 	do_lcd_command secondLine
 
 	;out PORTC, temp1
@@ -209,7 +207,7 @@ outOfStockScreen:
 
 
 	;We will have a check to see when this equals 6 i.e. 1.5secs to toggle led's
-
+	setMenu 3
 	ldi temp, 12	;for 3 seconds, intitilise to 12, because every 0.25s x 4 = 1 *3 = 12;
 	sts timer3, temp
 	ret
@@ -236,12 +234,10 @@ Timer0OVF: ; interrupt subroutine to Timer0
 	ldi temp, high(1953) ; 7812 = 10^6/128
 	cpc r25, temp
 
-// Execute every 0.25 sec
+
 	brne NotSecond //not 0.25 seconds
-	
+	// Execute every 0.25 sec
 	timer1flag:
-		;lds temp, menu
-		;cpi temp, 1
 		checkIfMenu 1
 		brne timer3flag
 		lds temp, timer1
@@ -253,15 +249,25 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		rjmp newQsecond
 		
 	timer3flag:
-		checkIfMenu 3 ;check if in out of stock
+		checkIfMenu 3 ;check if in out of stock screen
 		brne epilogue
 		lds temp, timer3
-
+		out portc, temp
 		cpi temp, 0
 		breq callSelectScreen ;change later
-		;cpi temp, 12
+		
+		//FLASH LEDS
+		lds temp2, numpressed
+		andi temp2, 0b00000001
+		cpi temp2, 0
+		brne continue
+		ldi temp1, 0b11111111
+		eor temp2, temp1
 
+
+		continue:
 		dec temp
+		out portc, temp
 		sts timer3, temp
 		rjmp newQsecond
 
@@ -269,9 +275,9 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		rcall selectScreen
 		rjmp epilogue
 
-	callOOSScreen:
+	/*callOOSScreen:
 		rcall outOfStockScreen
-		rjmp epilogue
+		rjmp epilogue*/
 
 /*	if(menu == 1 || menu == 3)
 		use timer1 (3 seconds)
