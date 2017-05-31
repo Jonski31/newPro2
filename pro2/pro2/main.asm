@@ -51,6 +51,9 @@ currentStock:
 currentCost:
 	.byte 1
 
+pattern:
+	.byte 1
+
 //INTERUPTS
 .cseg
 	.org 0
@@ -79,9 +82,12 @@ RESET:
 	out DDRF, r16
 	out DDRC, r16
 	out DDRA, r16
+	out DDRG, r16
 	clr r16
 	out PORTF, r16
 	out PORTA, r16
+	out PORTC, r16
+	out PORTG, r16
 
 	// TIMER RESET//
 	clear TempCounter ; Initialize the temporary counter to 0
@@ -210,6 +216,8 @@ outOfStockScreen:
 	setMenu 3
 	ldi temp, 12	;for 3 seconds, intitilise to 12, because every 0.25s x 4 = 1 *3 = 12;
 	sts timer3, temp
+	ldi temp, 0b00000000
+	sts pattern, temp
 	ret
 
 
@@ -252,22 +260,24 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		checkIfMenu 3 ;check if in out of stock screen
 		brne epilogue
 		lds temp, timer3
-		out portc, temp
+		//out portc, temp
 		cpi temp, 0
 		breq callSelectScreen ;change later
 		
 		//FLASH LEDS
-		lds temp2, numpressed
-		andi temp2, 0b00000001
-		cpi temp2, 0
-		brne continue
-		ldi temp1, 0b11111111
-		eor temp2, temp1
-
-
+		mov temp2, temp //load number into temop
+		andi temp2, 0b00000001 //and to get either a 1 or 0
+		cpi temp2, 0 //0 = even, 1 = odd
+		brne continue //If odd skip
+		ldi temp1, 0b11111111 
+		lds temp2, pattern
+		eor temp2, temp1 //Invert pattern
+		sts pattern, temp2
+		out portc, temp2
+		out portg, temp2
 		continue:
 		dec temp
-		out portc, temp
+		;out portc, temp
 		sts timer3, temp
 		rjmp newQsecond
 

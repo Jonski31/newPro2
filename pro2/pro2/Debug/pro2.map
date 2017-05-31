@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.6  G:\comp2121\newPro2\pro2\pro2\main.asm Wed May 31 23:28:53 2017
+AVRASM ver. 2.2.6  G:\comp2121\newPro2\pro2\pro2\main.asm Wed May 31 23:51:49 2017
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1379,10 +1379,11 @@ DSEG timer3       00000206
 DSEG numPressed   00000207
 DSEG currentStock 00000208
 DSEG currentCost  00000209
+DSEG pattern      0000020a
 CSEG RESET        00000090
-CSEG EXT_INT0     0000023c
-CSEG EXT_INT1     00000254
-CSEG Timer0OVF    000001f3
+CSEG EXT_INT0     00000245
+CSEG EXT_INT1     0000025d
+CSEG Timer0OVF    000001f9
 CSEG colloop      00000030
 CSEG returnBridge 00000047
 CSEG delay        00000035
@@ -1396,34 +1397,34 @@ CSEG symbols      00000064
 CSEG storeKeypad  00000075
 CSEG star         0000006b
 CSEG zero         0000006e
-CSEG selectScreen 0000015e
+CSEG selectScreen 00000161
 CSEG branchOOSScreen 00000073
-CSEG outOfStockScreen 0000019f
-DSEG inventory    0000020a
-CSEG increment@getInventory@4001 00000081
-CSEG return@getInventory@4001 0000008b
-CSEG startScreen  000000e1
-CSEG main         000001ef
-CSEG lcd_command  0000026d
-CSEG lcd_wait     0000027d
-CSEG sleep_5ms    00000297
-CSEG sleep_1ms    0000028e
-CSEG lcd_data     00000274
-CSEG NotSecond    0000022e
-CSEG timer1flag   00000205
-CSEG timer3flag   00000211
-CSEG callSelectScreen 00000226
-CSEG newQsecond   00000228
-CSEG epilogue     00000232
-CSEG continue     00000221
-CSEG END_INT0     0000024a
-CSEG END_INT1     00000262
-CSEG halt         0000026c
+CSEG outOfStockScreen 000001a2
+DSEG inventory    0000020b
+CSEG increment@getInventory@4004 00000081
+CSEG return@getInventory@4004 0000008b
+CSEG startScreen  000000e4
+CSEG main         000001f5
+CSEG lcd_command  00000276
+CSEG lcd_wait     00000286
+CSEG sleep_5ms    000002a0
+CSEG sleep_1ms    00000297
+CSEG lcd_data     0000027d
+CSEG NotSecond    00000237
+CSEG timer1flag   0000020b
+CSEG timer3flag   00000217
+CSEG callSelectScreen 0000022f
+CSEG newQsecond   00000231
+CSEG epilogue     0000023b
+CSEG continue     0000022b
+CSEG END_INT0     00000253
+CSEG END_INT1     0000026b
+CSEG halt         00000275
 EQU  LCD_RS       00000007
 EQU  LCD_E        00000006
 EQU  LCD_RW       00000005
 EQU  LCD_BE       00000004
-CSEG lcd_wait_loop 00000282
+CSEG lcd_wait_loop 0000028b
 EQU  F_CPU        00f42400
 EQU  DELAY_1MS    00000f9c
-CSEG delayloop_1ms 00000292
+CSEG delayloop_1ms 0000029b
