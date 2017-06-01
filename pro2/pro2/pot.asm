@@ -44,12 +44,17 @@ potRight:
 	rjmp returnPot
 
 coinInserted:
-	lds temp, coins 
+	lds temp, coins
 	lsl temp
 	inc temp
 	sts coins, temp
 	out PORTC, temp
 	setInserted 0
+
+	lds temp1, coinsforReturn //increment coins for return when pot is triggered
+	inc temp1  
+	sts coinsForReturn, temp1
+	rcall coinScreen
 	rjmp returnPot
 
 incTurnedRight:

@@ -31,7 +31,7 @@
 
 
 .dseg
-	menu: .byte 1 ; menu screen 1-5
+	menu: .byte 1 ; menu screen 1-7
 	coins: .byte 1 ;keeps track of number of coins entered so far
 // TIMERS //
 TimeCounter:
@@ -57,13 +57,14 @@ turnedRight: .byte 1
 ;finalLeft: .byte 1
 inserted: .byte 1
 coinsForReturn : .byte 1
-
+coinReturnTime: .byte 1
 currentStock:
 	.byte 1
 currentCost:
 	.byte 1
 pattern:
 	.byte 1 //pattern for leds atm flash only
+
 //INTERUPTS
 .cseg
 	.org 0
@@ -133,6 +134,11 @@ RESET:
 	ldi temp, (1 << ADEN) | (1 << ADSC) | (1 << ADIE) | (5 << ADPS0)
 	sts ADCSRA, temp
 
+	ser temp
+	out DDRE, temp
+	clr temp
+	out PORTE, temp
+
 	sei ; Enable global interrupt
 
 	// INVENTORY INITIALISATION
@@ -142,6 +148,7 @@ RESET:
 	ldi temp, 0
 	sts coins, temp
 	sts coinsForReturn, temp
+	sts coinReturnTime,temp
 
 	rcall startScreen
 	rjmp main			;go to main to start polling, reset finished
@@ -185,16 +192,24 @@ startScreen: ;start screen is part of reset function
 	do_lcd_data 'n'
 	do_lcd_data 'e'
 	
+	
+
 	ldi temp, 12	; for 3 seconds, intitilise to 13, because every 0.25s x 4 = 1 *3 = 12;
 	sts timer1, temp
 	ret
 
 selectScreen:
+	
 	// if coming from insertCoin screen, we need to clear coins, clear leds, and keep the value of coins in coinsforreturn
 	checkIfMenu 4
 	brne test
-	lds temp, coins
-	sts coinsForReturn, temp
+	//lds temp, coinsForReturn
+	//lsl temp
+	//sts coinsForReturn, temp
+	//inc temp
+	//out portc, temp
+	//sts coinsForReturn, temp
+
 	ldi temp, 0
 	sts coins, temp
 	out PORTC, temp
@@ -278,12 +293,40 @@ coinScreen:
 	out portc, temp
 	// SHOW NUMBER OF COINS REMAINING = CURRENTCOST - COINS ENTERED
 	lds temp1, currentCost
+	lds temp, coinsForReturn
 	sub temp1, temp
+	cpi temp1, 1
+	brlt DeliverScreen
 	subi temp1, -'0'
 	do_lcd_data_reg temp1
 	
 	ret
 
+DeliverScreen:
+	setMenu 5
+
+	resetLCD
+
+	do_lcd_data 'D'
+	do_lcd_data 'e'
+	do_lcd_data 'l'
+	do_lcd_data 'i'
+	do_lcd_data 'v'
+	do_lcd_data 'e'
+	do_lcd_data 'r'
+	do_lcd_data 'i'
+	do_lcd_data 'n'
+	do_lcd_data 'g'
+	do_lcd_data ' '
+	do_lcd_data 'i'
+	do_lcd_data 't'
+	do_lcd_data 'e'
+	do_lcd_data 'm'
+	
+	//Clear LEDs
+	clr temp
+	out portc, temp
+	ret
 
 	///ADMIN MODE
 enterAdminMode:
@@ -352,18 +395,44 @@ Timer0OVF: ; interrupt subroutine to Timer0
 	ldi temp, high(1953) ; 7812 = 10^6/128
 	cpc r25, temp
 	brne NotSecond //not 0.25 seconds
+	rjmp returnflag
+	NotSecond:
+	; Store the new value of the temporary counter.
+	sts TempCounter, r24
+	sts TempCounter+1, r25
+	rjmp epilogue
 	// Execute every 0.25 sec
+	returnFlag:
+		lds temp2, coinReturnTime // check if we need to return coins
+		cpi temp2, 0
+		breq timer1flag 
+		//out portc, temp2
+		andi temp2, 0b00000001
+		//out portc, temp2
+		cpi temp2,0 // and so we can check if number is odd or even
+		brne odd
+		startmotor
+		rjmp reducecoins
+		odd: 
+		stopmotor
+
+		reducecoins:
+		lds temp2, coinReturnTime 
+		dec temp2                   //reduce coin number and store back
+		sts coinReturnTime, temp2
+		rjmp newQsecond
+
 	timer1flag:
 		checkIfMenu 1
 		brne timer6flag
 		lds temp, timer1
-
 		cpi temp, 0
-		breq callSelectScreen ;change later
+		brne skip
+		rjmp callSelectScreen ;change later
+		skip:
 		dec temp
 		sts timer1, temp
 		rjmp newQsecond
-	
 	timer6flag:
 		checkIfMenu 2		;admin mode can only be entered in menu 2
 		brne timer3flag		;ELSE move on
@@ -406,13 +475,7 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		;out portc, temp
 		sts timer3, temp
 		rjmp newQsecond
-
-	NotSecond:
-	; Store the new value of the temporary counter.
-	sts TempCounter, r24
-	sts TempCounter+1, r25
-	rjmp epilogue
-
+	
 	callSelectScreen:
 		ldi temp, 0b00001111
 		;out portc, temp
@@ -425,22 +488,13 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		rcall enterAdminMode
 		rjmp epilogue
 
-/*	if(menu == 1 || menu == 3)
-		use timer1 (3 seconds)
-	else if (menu == 2)
-		use timer2 (5 seconds)*/
-
-
-
 newQsecond: ;starts new quarter 
 	clear TempCounter ; Reset the temporary counter.
 	rjmp epilogue
 
-
 epilogue:
 	popStack
 	reti ; Return from the interrupt.
-
 
 // PUSH BUTTON INTERUPTS :)
 EXT_INT0: ;Right Button

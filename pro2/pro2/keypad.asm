@@ -40,7 +40,6 @@ convert:
 	checkIfMenu 1
 	breq branchSelectScreen
 	;rcall SelectScreen	; try make to rcall
-	
 	cpi col, 3 ; If the pressed key is in col.3
 	breq letters ; we have a letter
 	; If the key is not in col.3 and
@@ -66,6 +65,14 @@ symbols:
 	cpi col, 1 ; or if we have zero
 	breq zero
 	ldi r23, '#' ; if not we have hash
+
+
+	lds temp1, coinsforReturn
+	lsl temp1
+	sts coinReturnTime, temp1  //store coins for return * 2 in coin return time
+	ldi temp1, 0
+	sts coinsforReturn, temp1 // clear coins for return
+	rcall sleep_25ms
 
 	checkIfMenu 4			;if on insert coins screen move to select screen
 	breq branchSelectScreen
