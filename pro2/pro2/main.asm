@@ -51,6 +51,8 @@ numPressed:		; current number pressed
 prevNum:		; previous number pressed
 	.byte 1
 
+sound:			; beep static for 250ms
+	.byte 1
 //INSERT COIN
 initialLeft: .byte 1
 turnedRight: .byte 1
@@ -134,10 +136,14 @@ RESET:
 	ldi temp, (1 << ADEN) | (1 << ADSC) | (1 << ADIE) | (5 << ADPS0)
 	sts ADCSRA, temp
 
-	ser temp
+	ser temp              //MOTOR IS PIN 3
 	out DDRE, temp
 	clr temp
 	out PORTE, temp
+	ser temp              //SOUND IS PIN 0
+	out DDRB, temp
+	clr temp
+	out PORTB, temp
 
 	sei ; Enable global interrupt
 
@@ -191,8 +197,6 @@ startScreen: ;start screen is part of reset function
 	do_lcd_data 'i'
 	do_lcd_data 'n'
 	do_lcd_data 'e'
-	
-	
 
 	ldi temp, 12	; for 3 seconds, intitilise to 13, because every 0.25s x 4 = 1 *3 = 12;
 	sts timer1, temp
@@ -230,7 +234,7 @@ selectScreen:
 	do_lcd_data 'c'
 	do_lcd_data 't'
 	do_lcd_data ' '
-	do_lcd_data 'i'
+	do_lcd_data 'I'
 	do_lcd_data 't'
 	do_lcd_data 'e'
 	do_lcd_data 'm'
@@ -247,7 +251,7 @@ outOfStockScreen:
 	do_lcd_data 'o'
 	do_lcd_data 'f'
 	do_lcd_data ' '
-	do_lcd_data 's'
+	do_lcd_data 'S'
 	do_lcd_data 't'
 	do_lcd_data 'o'
 	do_lcd_data 'c'
@@ -281,7 +285,7 @@ coinScreen:
 	do_lcd_data 'r'
 	do_lcd_data 't'
 	do_lcd_data ' '
-	do_lcd_data 'c'
+	do_lcd_data 'C'
 	do_lcd_data 'o'
 	do_lcd_data 'i'
 	do_lcd_data 'n'
@@ -319,13 +323,13 @@ DeliverScreen:
 	do_lcd_data 'n'
 	do_lcd_data 'g'
 	do_lcd_data ' '
-	do_lcd_data 'i'
+	do_lcd_data 'I'
 	do_lcd_data 't'
 	do_lcd_data 'e'
 	do_lcd_data 'm'
 	
 	ldi temp2, 3    // counter
-	
+	decreaseStock
 	startMotor
 	timeLoop:
 	ser temp1		;flash leds
@@ -353,8 +357,10 @@ DeliverScreen:
 
 	///ADMIN MODE
 enterAdminMode:
-
+	pushTemp
 	resetLCD
+
+	setMenu 6
 
 	do_lcd_data 'A'
 	do_lcd_data 'd'
@@ -367,35 +373,39 @@ enterAdminMode:
 	do_lcd_data 'd'
 	do_lcd_data 'e'
 	do_lcd_data ' '
-	do_lcd_data '?' ;this is currently selected item
+
+	ldi temp, 1
+	sts numPressed, temp
+	getInventory temp
+
+	subi temp, -'0'
+	do_lcd_data_reg temp
 
 	do_lcd_command secondLine
-	do_lcd_data '#'
-
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-	do_lcd_data ' '
-
-	ldi temp, 36        ;ASCII value for $$$
+	lds temp, currentStock
+	;out PORTC, temp
+	subi temp, -'0'
 	do_lcd_data_reg temp
-	setMenu 6
-	
+
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+	do_lcd_data ' '
+
+	lds temp, currentCost
+	subi temp, -'0'
+	do_lcd_data_reg temp
+	printLedAdmin
+	popTemp	
 	ret
 
 
 // MAIN LOOP TO START POLLING
 main:
-	;lds temp, menu
-	;out portc, temp
-	;do_lcd_command secondLine
-	;lds temp, numPressed
-	;do_lcd_data_reg temp
-
 	ldi cmask, INITCOLMASK	; initial column mask
 	clr col					; initial column
 	rcall colloop			; continue poll
@@ -418,12 +428,34 @@ Timer0OVF: ; interrupt subroutine to Timer0
 	ldi temp, high(1953) ; 7812 = 10^6/128
 	cpc r25, temp
 	brne NotSecond //not 0.25 seconds
+
+	////////sound stuff
+	lds temp, sound
+	cpi temp, 1
+	brsh outputSound 
+	ldi temp2, 0b00000000
+	out PORTB, temp2  //Set no sound
+	
+	
+	rjmp returnFlag
+
+	outputSound:
+		ldi temp2, 0b10000000
+		out PORTB, temp2
+		lds temp2, sound
+		dec temp2
+		sts sound, temp2
+
+
+	//////////////
+
 	rjmp returnflag
-	NotSecond:
+NotSecond:
 	; Store the new value of the temporary counter.
 	sts TempCounter, r24
 	sts TempCounter+1, r25
 	rjmp epilogue
+
 	// Execute every 0.25 sec
 	returnFlag:
 		lds temp2, coinReturnTime // check if we need to return coins
@@ -450,9 +482,7 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		brne timer6flag
 		lds temp, timer1
 		cpi temp, 0
-		brne skip
-		rjmp callSelectScreen ;change later
-		skip:
+		breq callSelectScreen 
 		dec temp
 		sts timer1, temp
 		rjmp newQsecond
@@ -500,14 +530,10 @@ Timer0OVF: ; interrupt subroutine to Timer0
 		rjmp newQsecond
 	
 	callSelectScreen:
-		ldi temp, 0b00001111
-		;out portc, temp
 		rcall selectScreen
 		rjmp epilogue
 
 	callAdminMode:
-		ldi temp, 0b01010101
-		;out portc, temp
 		rcall enterAdminMode
 		rjmp epilogue
 
@@ -518,47 +544,83 @@ newQsecond: ;starts new quarter
 epilogue:
 	popStack
 	reti ; Return from the interrupt.
-
+/*
 // PUSH BUTTON INTERUPTS :)
 EXT_INT0: ;Right Button
 	pushStack
-	checkIfMenu 3  ;if menu = 3, go back to select screen 
-	brne END_INT0
 	clr temp
 	out PORTC, temp
 	out PORTG, temp
-	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
-	breq END_INT0 
-
-	ldi debounceFlag0, 1 ;set debounce flag*/
+	
+	checkIfMenu 6
+	breq incStock
 
 	checkIfMenu 3  ;if menu = 3, go back to select screen 
-	brne END_INT0
+	brne endBridge0
 	rcall selectScreen
+	rjmp ENT_INT1
+
+//CHECK FOR LATER
+endBridge0:
+	jmp END_INT0
+	rcall selectScreen
+	rjmp END_INT1
+END_INT0:
+	popStack
+	reti
+incStock:
+	increaseStock
+	updateAdminScreen
+*/
+EXT_INT0: ;Right Button
+	pushStack
 	
+	clr temp
+	out PORTC, temp
+	out PORTG, temp
+	
+	checkIfMenu 6
+	breq incStock
+	
+	checkIfMenu 3  ;if menu = 3, go back to select screen 
+	brne bridgeENDINT0
+	rcall selectScreen
+	jmp END_INT0
+bridgeENDINT0:
+	jmp END_INT0
+incStock:
+	updateAdminScreen
+	increaseStock
+	updateAdminScreen
 END_INT0:
 	popStack
 	reti
 
+
 EXT_INT1: ;Left Button
 	pushStack
-	checkIfMenu 3  ;if menu = 3, go back to select screen 
-	brne END_INT1
+	
 	clr temp
 	out PORTC, temp
 	out PORTG, temp
-	/*cpi debounceFlag0, 1 ;if still debouncing, ignore interupt
-	breq END_INT0 
-
-	ldi debounceFlag0, 1 ;set debounce flag*/
+	
+	checkIfMenu 6
+	breq decStock
 	
 	checkIfMenu 3  ;if menu = 3, go back to select screen 
-	brne END_INT1
+	brne bridgeENDINT1
 	rcall selectScreen
-		
+	jmp END_INT1
+bridgeENDINT1:
+	jmp END_INT1
+decStock:
+	updateAdminScreen
+	decreaseStock
+	updateAdminScreen
 END_INT1:
 	popStack
 	reti
+
 
 
 halt:
