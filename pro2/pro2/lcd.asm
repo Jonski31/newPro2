@@ -80,6 +80,19 @@ sleep_5ms:
 	rcall sleep_1ms
 	ret
 
+sleep_500ms:
+	push temp
+	ldi temp, 100
+
+	loop:
+	rcall sleep_5ms
+	dec temp
+	cpi temp, 0
+	brne loop
+
+	pop temp
+	ret
+
 sleep_25ms:
 	rcall sleep_5ms
 	rcall sleep_5ms

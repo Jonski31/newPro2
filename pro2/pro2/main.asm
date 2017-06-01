@@ -236,6 +236,7 @@ selectScreen:
 	do_lcd_data 'm'
 	ret
 
+//menu 3
 outOfStockScreen:
 	resetLCD
 
@@ -323,10 +324,32 @@ DeliverScreen:
 	do_lcd_data 'e'
 	do_lcd_data 'm'
 	
-	//Clear LEDs
+	ldi temp2, 3    // counter
+	
+	startMotor
+	timeLoop:
+	ser temp1		;flash leds
+	out PORTC, temp1
+	out PORTG, temp1
+
+	rcall sleep_500ms
+
+	clr temp1		;clear leds
+	out PORTC, temp1
+	out PORTG, temp1
+
+	rcall sleep_500ms
+
+	dec temp2
+	cpi temp2, 0
+	brne timeLoop
+
+	stopMotor
 	clr temp
-	out portc, temp
-	ret
+	sts coins, temp
+	sts coinsForReturn, temp
+	rjmp SelectScreen
+	;ret
 
 	///ADMIN MODE
 enterAdminMode:

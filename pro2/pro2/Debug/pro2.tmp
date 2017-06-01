@@ -40,13 +40,14 @@
   <turnedRight><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>56</LINE></turnedRight>
   <inserted><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>58</LINE></inserted>
   <coinsForReturn><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>59</LINE></coinsForReturn>
+  <coinReturnTime><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>60</LINE></coinReturnTime>
   <currentStock><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>61</LINE></currentStock>
   <currentCost><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>63</LINE></currentCost>
   <pattern><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>65</LINE></pattern>
-  <RESET><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>86</LINE></RESET>
-  <EXT_INT0><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>446</LINE></EXT_INT0>
-  <EXT_INT1><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>466</LINE></EXT_INT1>
-  <Timer0OVF><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>343</LINE></Timer0OVF>
+  <RESET><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>87</LINE></RESET>
+  <EXT_INT0><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>523</LINE></EXT_INT0>
+  <EXT_INT1><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>543</LINE></EXT_INT1>
+  <Timer0OVF><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>409</LINE></Timer0OVF>
   <EXT_POT><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>2</LINE></EXT_POT>
   <colloop><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>3</LINE></colloop>
   <returnBridge><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>29</LINE></returnBridge>
@@ -54,47 +55,56 @@
   <nextcol><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>34</LINE></nextcol>
   <rowloop><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>19</LINE></rowloop>
   <convert><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>39</LINE></convert>
-  <returnKeypad><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>118</LINE></returnKeypad>
-  <branchSelectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>93</LINE></branchSelectScreen>
-  <letters><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>59</LINE></letters>
-  <symbols><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>63</LINE></symbols>
-  <storeKeypad><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>102</LINE></storeKeypad>
-  <star><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>77</LINE></star>
-  <zero><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>89</LINE></zero>
-  <selectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>192</LINE></selectScreen>
-  <branchOOSScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>97</LINE></branchOOSScreen>
-  <outOfStockScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>224</LINE></outOfStockScreen>
-  <storePrev><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>115</LINE></storePrev>
+  <returnKeypad><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>125</LINE></returnKeypad>
+  <branchSelectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>100</LINE></branchSelectScreen>
+  <letters><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>58</LINE></letters>
+  <symbols><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>62</LINE></symbols>
+  <storeKeypad><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>109</LINE></storeKeypad>
+  <star><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>84</LINE></star>
+  <zero><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>96</LINE></zero>
+  <sleep_25ms><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>96</LINE></sleep_25ms>
+  <selectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>201</LINE></selectScreen>
+  <branchOOSScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>104</LINE></branchOOSScreen>
+  <outOfStockScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>240</LINE></outOfStockScreen>
+  <storePrev><FILE>G:\comp2121\newPro2-master\pro2\pro2\keypad.asm</FILE><LINE>122</LINE></storePrev>
   <inventory><FILE>G:\comp2121\newPro2-master\pro2\pro2\inventory.asm</FILE><LINE>6</LINE></inventory>
-  <coinScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>256</LINE></coinScreen>
+  <coinScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>272</LINE></coinScreen>
   <potLeft><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>28</LINE></potLeft>
   <potRight><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>39</LINE></potRight>
   <returnPot><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>24</LINE></returnPot>
-  <incInitialLeft><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>60</LINE></incInitialLeft>
+  <incInitialLeft><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>65</LINE></incInitialLeft>
   <coinInserted><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>46</LINE></coinInserted>
-  <incTurnedRight><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>55</LINE></incTurnedRight>
-  <startScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>149</LINE></startScreen>
-  <main><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>326</LINE></main>
+  <incTurnedRight><FILE>G:\comp2121\newPro2-master\pro2\pro2\pot.asm</FILE><LINE>60</LINE></incTurnedRight>
+  <startScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>156</LINE></startScreen>
+  <main><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>392</LINE></main>
   <lcd_command><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>19</LINE></lcd_command>
   <lcd_wait><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>39</LINE></lcd_wait>
   <sleep_5ms><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>75</LINE></sleep_5ms>
   <sleep_1ms><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>63</LINE></sleep_1ms>
   <lcd_data><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>28</LINE></lcd_data>
-  <test><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>205</LINE></test>
-  <enterAdminMode><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>289</LINE></enterAdminMode>
-  <NotSecond><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>410</LINE></NotSecond>
-  <timer1flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>356</LINE></timer1flag>
-  <timer6flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>367</LINE></timer6flag>
-  <callSelectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>416</LINE></callSelectScreen>
-  <newQsecond><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>435</LINE></newQsecond>
-  <timer3flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>384</LINE></timer3flag>
-  <callAdminMode><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>422</LINE></callAdminMode>
-  <epilogue><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>440</LINE></epilogue>
-  <continue><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>404</LINE></continue>
-  <END_INT0><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>462</LINE></END_INT0>
-  <END_INT1><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>482</LINE></END_INT1>
-  <halt><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>487</LINE></halt>
+  <test><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>220</LINE></test>
+  <DeliverScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>306</LINE></DeliverScreen>
+  <timeLoop><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>330</LINE></timeLoop>
+  <sleep_500ms><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>83</LINE></sleep_500ms>
+  <enterAdminMode><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>355</LINE></enterAdminMode>
+  <NotSecond><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>422</LINE></NotSecond>
+  <returnflag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>428</LINE></returnflag>
+  <epilogue><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>518</LINE></epilogue>
+  <timer1flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>448</LINE></timer1flag>
+  <odd><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>439</LINE></odd>
+  <reducecoins><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>442</LINE></reducecoins>
+  <newQsecond><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>514</LINE></newQsecond>
+  <timer6flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>459</LINE></timer6flag>
+  <skip><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>455</LINE></skip>
+  <callSelectScreen><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>502</LINE></callSelectScreen>
+  <timer3flag><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>476</LINE></timer3flag>
+  <callAdminMode><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>508</LINE></callAdminMode>
+  <continue><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>496</LINE></continue>
+  <END_INT0><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>539</LINE></END_INT0>
+  <END_INT1><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>559</LINE></END_INT1>
+  <halt><FILE>G:\comp2121\newPro2-master\pro2\pro2\main.asm</FILE><LINE>564</LINE></halt>
   <lcd_wait_loop><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>45</LINE></lcd_wait_loop>
   <delayloop_1ms><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>68</LINE></delayloop_1ms>
+  <loop><FILE>G:\comp2121\newPro2-master\pro2\pro2\lcd.asm</FILE><LINE>87</LINE></loop>
  </LABELS>
 </ASSEMBLER_INFO>

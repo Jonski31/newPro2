@@ -233,28 +233,14 @@ return:
 
 .macro startMotor
 	push temp
-
-	//ldi temp, (1<<TOIE1)
-	//sts TIMSK0, temp
-	/*ldi temp, low(0xFF)
-	sts OCR3AH, temp
-	ldi temp, high(0xFF)
-	sts OCR3AL, temp
-	*/
-
-
 	ldi temp, 0b00010000
-	//ldi temp, 0b00010000
 	out PORTE, temp
-
 	pop temp
 .endMacro
 
 .macro stopMotor
 	push temp
-
 	ldi temp, 0b00000000
 	out PORTE, temp
-
 	pop temp
 .endmacro
