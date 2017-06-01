@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.6  G:\comp2121\newPro2-master\pro2\pro2\main.asm Thu Jun 01 16:10:50 2017
+AVRASM ver. 2.2.6  G:\comp2121\newPro2-master\pro2\pro2\main.asm Thu Jun 01 16:18:57 2017
 
 
 EQU  SIGNATURE_000 0000001e
@@ -1387,11 +1387,11 @@ DSEG coinsForReturn 0000020e
 DSEG currentStock 0000020f
 DSEG currentCost  00000210
 DSEG pattern      00000211
-CSEG RESET        000000b9
+CSEG RESET        00000115
 CSEG EXT_INT0     000003bf
 CSEG EXT_INT1     000003de
 CSEG Timer0OVF    0000035e
-CSEG EXT_POT      00000302
+CSEG EXT_POT      000000b9
 CSEG colloop      0000003c
 CSEG returnBridge 00000053
 CSEG delay        00000041
@@ -1405,29 +1405,29 @@ CSEG symbols      00000073
 CSEG storeKeypad  00000097
 CSEG star         00000082
 CSEG zero         00000090
-CSEG selectScreen 00000198
+CSEG selectScreen 000001f4
 CSEG branchOOSScreen 00000095
-CSEG outOfStockScreen 000001f4
+CSEG outOfStockScreen 00000250
 CSEG storePrev    000000b6
 DSEG inventory    00000212
 CSEG increment@getInventory@4121 000000a5
 CSEG return@getInventory@4121 000000af
-CSEG coinScreen   00000247
-CSEG startScreen  0000011b
-CSEG main         000002fe
+CSEG coinScreen   000002a3
+CSEG potLeft      000000e1
+CSEG potRight     000000ee
+CSEG returnPot    000000d7
+CSEG incInitialLeft 0000010f
+CSEG coinInserted 000000f7
+CSEG incTurnedRight 00000104
+CSEG startScreen  00000177
+CSEG main         0000035a
 CSEG lcd_command  000003fe
 CSEG lcd_wait     0000040e
 CSEG sleep_5ms    00000428
 CSEG sleep_1ms    0000041f
 CSEG lcd_data     00000405
-CSEG test         000001b3
-CSEG enterAdminMode 00000298
-CSEG potLeft      0000032a
-CSEG potRight     00000337
-CSEG returnPot    00000320
-CSEG incInitialLeft 00000358
-CSEG coinInserted 00000340
-CSEG incTurnedRight 0000034d
+CSEG test         0000020f
+CSEG enterAdminMode 000002f4
 CSEG NotSecond    000003a4
 CSEG timer1flag   00000370
 CSEG timer6flag   0000037c
