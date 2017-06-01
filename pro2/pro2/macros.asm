@@ -176,4 +176,56 @@ return:
 	clr temp
 .endMacro
 
+
+
 ////////////////////////////////////
+
+///// ADC MACROS /////////////////
+.macro setInitialLeft
+	push temp
+	ldi temp, @0
+	sts initialLeft, temp
+	pop temp
+.endMacro
+
+.macro setTurnedRight
+	push temp
+	ldi temp, @0
+	sts turnedRight, temp
+	pop temp
+.endMacro
+
+.macro setFinalLeft
+	push temp
+	ldi temp, @0
+	sts finalLeft, temp
+	pop temp
+.endMacro
+
+.macro setInserted
+	push temp
+	ldi temp, @0
+	sts inserted, temp
+	pop temp
+.endMacro
+
+.macro checkIfInitialLeft
+	lds temp, initialLeft
+	cpi temp, @0
+.endMacro
+
+.macro checkIfFinalLeft
+	lds temp, finalLeft
+	cpi temp, @0
+.endMacro
+
+.macro checkIfTurnedRight
+	lds temp, turnedRight
+	cpi temp, @0
+.endMacro
+
+.macro checkIfInserted
+	lds temp, inserted
+	cpi temp, @0
+.endMacro
+///////////////////////////////

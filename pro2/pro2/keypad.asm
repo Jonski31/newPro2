@@ -67,13 +67,12 @@ symbols:
 	breq zero
 	ldi r23, '#' ; if not we have hash
 
-	;checkIfMenu 2
-	;breq returnKeypad
 	checkIfMenu 4			;if on insert coins screen move to select screen
 	breq branchSelectScreen
-	;out portc, r23
+
 	checkIfMenu 6			;if in admin mode move to select screen :)
 	breq branchSelectScreen
+
 	jmp returnKeypad
 star:
 	ldi r23, '*'		; Set to star
@@ -94,9 +93,9 @@ zero:
 branchSelectScreen:
 	rcall selectScreen	
 	rjmp returnKeypad
+
 branchOOSScreen:
 	rcall outOfStockScreen
-	;clr r23
 	rjmp returnKeypad
 
 // Store keypad when we need output value otherwise return

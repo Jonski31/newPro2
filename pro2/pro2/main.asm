@@ -18,6 +18,7 @@
 .def rmask = r21 ; mask for current row during scan
 .def cmask = r22 ; mask for current column during scan
 
+
 //KEYPAD CONSTANTS
 .equ PORTLDIR = 0xF0 ; PD7-4: output, PD3-0, input
 .equ INITCOLMASK = 0xEF ; scan from the rightmost column,
@@ -50,6 +51,13 @@ numPressed:		; current number pressed
 prevNum:		; previous number pressed
 	.byte 1
 
+//INSERT COIN
+initialLeft: .byte 1
+turnedRight: .byte 1
+;finalLeft: .byte 1
+inserted: .byte 1
+coinsForReturn : .byte 1
+
 currentStock:
 	.byte 1
 currentCost:
@@ -67,6 +75,9 @@ pattern:
 	.org OVF0addr
 		jmp Timer0OVF ; Jump to the interrupt handler for
 						; Timer0 overflow.
+	.org 0x003A		  ;Address of ADC
+		jmp EXT_POT
+
 
 
 .include "keypad.asm"
@@ -114,6 +125,14 @@ RESET:
 	ori temp, (1<<INT1)
 	out EIMSK, temp
 
+	// ADC INIT
+	ldi temp, (3 << REFS0) | (0 << ADLAR) | (0 << MUX0)
+	sts ADMUX, temp
+	ldi temp, (1 << MUX5)
+	sts ADCSRB, temp
+	ldi temp, (1 << ADEN) | (1 << ADSC) | (1 << ADIE) | (5 << ADPS0)
+	sts ADCSRA, temp
+
 	sei ; Enable global interrupt
 
 	// INVENTORY INITIALISATION
@@ -122,6 +141,7 @@ RESET:
 	// CONSTANTS
 	ldi temp, 0
 	sts coins, temp
+	sts coinsForReturn, temp
 
 	rcall startScreen
 	rjmp main			;go to main to start polling, reset finished
@@ -170,6 +190,19 @@ startScreen: ;start screen is part of reset function
 	ret
 
 selectScreen:
+	// if coming from insertCoin screen, we need to clear coins, clear leds, and keep the value of coins in coinsforreturn
+	checkIfMenu 4
+	brne test
+	lds temp, coins
+	sts coinsForReturn, temp
+	ldi temp, 0
+	sts coins, temp
+	out PORTC, temp
+	setInserted 0
+	setInitialLeft 0
+	setTurnedRight 0
+
+	test:
 	setMenu 2
 	;out portc, temp
 
@@ -189,12 +222,6 @@ selectScreen:
 	ret
 
 outOfStockScreen:
-
-	
-	;setMenu 3
-	;ldi temp, 0b10101010
-	;out portc, temp
-
 	resetLCD
 
 	do_lcd_data 'O'
@@ -246,7 +273,7 @@ coinScreen:
 
 	do_lcd_command secondLine
 	
-	// PRINT TO LED NUMBER OF COINS BEEN ENTERED, LEAVE IN, NOT DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// PRINT TO LED NUMBER OF COINS BEEN ENTERED, LEAVE IN, NOT DEBUGGING!!!!!
 	lds temp, coins
 	out portc, temp
 	// SHOW NUMBER OF COINS REMAINING = CURRENTCOST - COINS ENTERED
@@ -308,6 +335,73 @@ main:
 	rcall colloop			; continue poll
 	rjmp main				; loop main to continue polling 
 
+
+///////////////////////////////////////////////
+//pot interrupt
+EXT_POT:
+	pushStack
+	lds ZL, ADCL
+	lds ZH, ADCH
+
+	ldi temp, (3 << REFS0) | (0 << ADLAR) | (0 << MUX0)
+	sts ADMUX, temp
+	ldi temp, (1 << MUX5)
+	sts ADCSRB, temp
+	ldi temp, (1 << ADEN) | (1 << ADSC) | (1 << ADIE) | (5 << ADPS0)
+	sts ADCSRA, temp
+
+	cpi ZL, low(0x000)		//potentiometer is turned left
+	ldi temp1, high(0x000)
+	cpc ZH, temp1
+	breq potLeft
+
+	cpi ZL, low(0x3FF)		//potentiometer is turned right
+	ldi temp1, high(0x3FF)
+	cpc ZH, temp1
+	breq potRight
+
+	returnPot:
+		popStack
+		reti
+
+potLeft:
+	checkIfMenu 4
+	brne returnPot
+	
+	checkIfTurnedRight 0
+	breq incInitialLeft
+
+	checkifInserted 1
+	breq coinInserted
+	rjmp returnPot
+
+potRight:
+	checkIfMenu 4
+	brne returnPot
+	checkIfInitialLeft 1
+	breq incTurnedRight 
+	rjmp returnPot
+
+coinInserted:
+	lds temp, coins 
+	lsl temp
+	inc temp
+	sts coins, temp
+	out PORTC, temp
+	setInserted 0
+	rjmp returnPot
+
+incTurnedRight:
+	setTurnedRight 1
+	setInserted 1
+	rjmp returnPot
+	
+incInitialLeft:
+	setInitialLeft 1
+	rjmp returnPot
+
+
+///////////////////////////////////////////
 
 // TIMER 0 INTERUPT
 Timer0OVF: ; interrupt subroutine to Timer0
@@ -415,6 +509,8 @@ epilogue:
 // PUSH BUTTON INTERUPTS :)
 EXT_INT0: ;Right Button
 	pushStack
+	checkIfMenu 3  ;if menu = 3, go back to select screen 
+	brne END_INT0
 	clr temp
 	out PORTC, temp
 	out PORTG, temp
@@ -433,6 +529,8 @@ END_INT0:
 
 EXT_INT1: ;Left Button
 	pushStack
+	checkIfMenu 3  ;if menu = 3, go back to select screen 
+	brne END_INT1
 	clr temp
 	out PORTC, temp
 	out PORTG, temp
